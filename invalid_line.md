@@ -13,17 +13,20 @@
 
 > ### Step 2: Go to `BGMM_RECORD` note `STA` 
 >> ```javascript
->> if(STA == C || (STA == 1 && BGMM_SCREEN.PAR and COST values != 0)){
+>> if(STA == C){
 >>          Go To Step 3
+>>    }
+>> else if((STA == 1 && BGMM_SCREEN.PAR and COST values != 0)){
+>>          Discuss with User Regarding PAR and COST at BGMM
 >>    }
 >> else if(STA == 1){
 >>      Go to Step 4
->>  }
->>  else if(No record found)
->>      Go to Step 
+>>    }
+>>  else if(No record found || for past due lines)
+>>      Go to Step 14
 >> ```
 
-> ### Step 3: If STA is C  or `If STA is 1 but there is PAR and COST in BGMM_SCREEN` Modify the `ACCRUAL TOTAL` to `0`
+> ### Step 3: If STA is C  or `If STA is 1 but there is no PAR and COST in BGMM_SCREEN` Modify the `ACCRUAL TOTAL` to `0`
 >> ```javascript
 >> if(Given_month == Previous){
 >>      Modify 
@@ -104,4 +107,34 @@
 >>  else{
 >>      Go to Step 3        
 >>  }
->>```  
+>>```
+
+> ### Step 14: If no Record found go `BGIR` line. Type `BGIR` line input FUND,CUSIP at first put `a` in place of `INT/DIV` hit enter
+
+> ### Step 15: In `BGIR_LIST` Select the record where `Due Date matches the Pay Date` of the record on report, press `d` next to it
+>>```javascript
+>>  if(No list on BGIR, BRFD , if BRMP){
+>>      Go to Step 18        
+>>  }
+>>  else{
+>>      Go to Step 16
+>>  }
+>>```
+
+> ### Step 16: Inside `BGIR_SCREEN` note `INC_STATUS` field and Report Date
+>>```javascript
+>>  if(BRIR_SCREEN.INC_STATUS == 'O' && BGIR_SCREEN.REPORT_DT < AS-OF Date_of_Report){
+>>      Close the Request at SOP page 23
+>>  }
+>>  else if(BGIR_SCREEN.INC_STATUS == 'P or F' && BGIR_SCREEN.REPORT_DT < AS-OF Date_of_Report){
+>>      Press `Y` next to INCOME RCVD and hit Enter and then follow step 17
+>>  }
+>>```
+
+> ### Step 17: After hitting y and enter Check the `REPORT DATE` field. If `Report Date of income receipt is after(>) the As-of Date of the interest receivable report` The request should be closed with comment at SOP page 24
+
+> ### Step 18: If there is No record on BGIR then again type `BGIR` input fund, Cusip, put C in `INT/DIV` hit Enter
+
+> ### Step 19: In `BGIR_LIST` Select the record where `Due Date matches the Pay Date` of the record on report, press `d` next to it
+
+> ### Step 20: Check The field `REPORT DT` and `CNCL RPT` if `CNCL_RPT is after(>) date of receivable report i.e REPORT DT` then the request should be closed with following response i.e is at SOP page 26; 
